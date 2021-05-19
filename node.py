@@ -12,7 +12,7 @@ class Node(object):
 
     def __init__(self, name="base_node", host="localhost", port=8000, log_setting = 2):
         self.nodename = f"{random.randint(1000000,9999999)}_{name}"
-        self._log_setting = 2
+        self._log_setting = log_setting
         self.log_directory = None
         try:
             self.client = xmlrpc.client.ServerProxy(f"http://{host}:{port}")
@@ -21,9 +21,9 @@ class Node(object):
         except:
             print("Server is not running")
             exit(1)
-
-        logging.basicConfig(filename=os.path.join(self.log_directory, f"{self.nodename}.log"), level=logging.DEBUG)
-        self.log("Node started")
+        if self._log_setting > 0:
+            logging.basicConfig(filename=os.path.join(self.log_directory, f"{self.nodename}.log"), level=logging.DEBUG)
+            self.log("Node started")
 
     def log(self, msg):
         if self._log_setting > 0:
