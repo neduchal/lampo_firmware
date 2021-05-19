@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 
 import time
+import signal
+import sys
+import os
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
+import logging
 
 class Node:
 
@@ -21,67 +25,93 @@ class Node:
         return self.first_timestamp
 
     def actualizeTimestamp(self, topic, timestamp):
-        print(self.timestamps)
         filtered = [x for x in self.timestamps if x[0] == topic]
-        print(filtered)
         if len(filtered) > 0:
             filtered[0][1] = timestamp
         else:
             self.timestamps.append([topic, timestamp])
-        print(self.timestamps)
+
 
 class Core:
 
-    def __init__(self, host="localhost", port=8000):
-        self.server = SimpleXMLRPCServer((host, port), requestHandler=SimpleXMLRPCRequestHandler, allow_none=True)
+    def __init__(self, host="localhost", port=8000, log_setting=2):
+        self.server = SimpleXMLRPCServer(
+            (host, port), requestHandler=SimpleXMLRPCRequestHandler, allow_none=True, logRequests=False)
         self.server.register_introspection_functions()
         self.registered_nodes = []
         self.messages = []
-
+        self._log_setting = log_setting
         self.server.register_function(self.registerNode, "registerNode")
         self.server.register_function(self.unregisterNode, "unregisterNode")
         self.server.register_function(self.receiveMessage, "sendMessage")
         self.server.register_function(self.sendMessage, "receiveMessage")
+        self.server.register_function(self.logDirectory, "logDirectory")
+
+        timestamp = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
+        self.log_directory = os.path.join("log/", timestamp)
+        if not os.path.exists(self.log_directory):
+            os.makedirs(self.log_directory)
+
+        logging.basicConfig(filename=os.path.join(self.log_directory, "server.log"), level=logging.DEBUG)
+
+    def logDirectory(self):
+        return self.log_directory
+
+    def log(self, msg):
+        if self._log_setting > 0:
+            timestamp = time.strftime("%Y.%m.%d %H:%M:%S", time.localtime())
+            if self._log_setting == 2:
+                print(f"[{timestamp}]: {msg}")
+            logging.info(f"[{timestamp}]: {msg}")
 
     def registerNode(self, name):
         for node in self.registered_nodes:
             if node.getName() == name:
-                return False                       
+                return False
         self.registered_nodes.append(Node(name))
-        print(f"Node {name} added")
+        self.log(f"Node [{name}] registered")
         return True
 
     def unregisterNode(self, name):
         for i, node in enumerate(self.registered_nodes):
             if node.getName() == name:
                 self.registered_nodes.pop(i)
-        
+        self.log(f"Node [{name}] unregistered")
+        return True
+
 
     def receiveMessage(self, topic, msg):
         self.messages.append((time.time(), topic, msg))
-        print(f"Recieved message {msg} to topic {topic}.")
 
-    def sendMessage(self, nodename, topic):     
-        msgs_to_delete = [x for x, y in enumerate(self.messages) if y[0] < (time.time() - 5)]
-        print(len(self.messages), msgs_to_delete)
+    def sendMessage(self, nodename, topic):
+        msgs_to_delete = [x for x, y in enumerate(
+            self.messages) if y[0] < (time.time() - 5)]
         [self.messages.pop(x) for x in msgs_to_delete[::-1]]
-        del msgs_to_delete 
+        del msgs_to_delete
         node = [n for n in self.registered_nodes if n.getName() == nodename]
         if len(node) > 0:
-            msgs_idxs = [x for x, y in enumerate(self.messages) if (y[1] == topic and  y[0] > node[0].getTimestamp(topic))]
+            msgs_idxs = [x for x, y in enumerate(self.messages) if (
+                y[1] == topic and y[0] > node[0].getTimestamp(topic))]
             if len(msgs_idxs) > 0:
-                node[0].actualizeTimestamp(topic, self.messages[msgs_idxs[0]][0])
+                node[0].actualizeTimestamp(
+                    topic, self.messages[msgs_idxs[0]][0])
                 return self.messages[msgs_idxs[0]][2]
         return None
 
+    def sigint_handler(self, sig, frame):
+        self.log("Lampo Firmware Server STOPing")
+        sys.exit(0)
+
     def run(self):
+        signal.signal(signal.SIGINT, self.sigint_handler)
+
+        print("#"*40)
+        print(" LAMPO FIRMWARE SERVER v 0.1")
+        print("#"*40)
+        self.log("Lampo Firmware Server STARTs")
         self.server.serve_forever()
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     server = Core()
     server.run()
-        
-        
-
-    
