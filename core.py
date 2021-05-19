@@ -46,6 +46,8 @@ class Core:
         self.server.register_function(self.receiveMessage, "sendMessage")
         self.server.register_function(self.sendMessage, "receiveMessage")
         self.server.register_function(self.logDirectory, "logDirectory")
+        self.server.register_function(self.getTopics, "getTopics")
+
 
         timestamp = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
         self.log_directory = os.path.join("log/", timestamp)
@@ -53,6 +55,12 @@ class Core:
             os.makedirs(self.log_directory)
 
         logging.basicConfig(filename=os.path.join(self.log_directory, "server.log"), level=logging.DEBUG)
+
+    def getTopics(self):
+        topics = [x[1] for x in self.messages]
+        print(topics)
+        topics = list(set(topics))
+        return topics
 
     def logDirectory(self):
         return self.log_directory
