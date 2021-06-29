@@ -5,71 +5,71 @@ import math
 import smbus
 
 class RobotMotors:
-	
-	def __init__(self, pwm_freq=500, debug=False):
-		self.pwm = PCA9685(0x40, debug)
-		self.pwm = pwm_freq
-		self.PWMA = 0
-		self.AIN1 = 1
-		self.AIN2 = 2
-		self.PWMB = 5
-		self.BIN1 = 3
-		self.BIN2 = 4
+  
+  def __init__(self, pwm_freq=500, debug=False):
+    self.pwm = PCA9685(0x40, debug)
+    self.pwm = pwm_freq
+    self.PWMA = 0
+    self.AIN1 = 1
+    self.AIN2 = 2
+    self.PWMB = 5
+    self.BIN1 = 3
+    self.BIN2 = 4
 
-	def motorRun(self, motor, index, speed):
-		if speed > 100:
-			return
-		if (motor == 0):
-			self.pwm.setDutycycle(self.PWMA, speed)
-			if ((index == "forward") or (index == "dopredu")):
-				self.pwm.setLevel(self.AIN1, 0)
-				self.pwm.setLevel(self.AIN2, 1)
-			elif ((index == "backward") or (index == "dozadu")):
-				self.pwm.setLevel(self.AIN1, 1)
-				self.pwm.setLevel(self.AIN2, 0)
-			else: 
-				print("Unkwnown direction motor A")	
-		elif (motor == 1):
-			self.pwm.setDutycycle(self.PWMB, speed)
-			if ((index == "forward") or (index == "dopredu")):
-				self.pwm.setLevel(self.BIN1, 0)
-				self.pwm.setLevel(self.BIN2, 1)
-			elif ((index == "backward") or (index == "dozadu")):
-				self.pwm.setLevel(self.BIN1, 1)
-				self.pwm.setLevel(self.BIN2, 0)
-			else: 
-				print("Unkwnown direction motor B")	
-		else:
-			print("The robot has only two motors")
-			
-	def motorStop(self, motor):
-		if (motor == 0):
-			self.pwm.setDutycycle(self.PWMA, 0)
-		elif (motor == 1):
-			self.pwm.setDutycycle(selg.PWMB, 1)
-		else:
-			print("The roboy has only two motors")
+  def motorRun(self, motor, index, speed):
+    if speed > 100:
+      return
+    if (motor == 0):
+      self.pwm.setDutycycle(self.PWMA, speed)
+      if ((index == "forward") or (index == "dopredu")):
+        self.pwm.setLevel(self.AIN1, 0)
+        self.pwm.setLevel(self.AIN2, 1)
+      elif ((index == "backward") or (index == "dozadu")):
+        self.pwm.setLevel(self.AIN1, 1)
+        self.pwm.setLevel(self.AIN2, 0)
+      else: 
+        print("Unkwnown direction motor A")	
+    elif (motor == 1):
+      self.pwm.setDutycycle(self.PWMB, speed)
+      if ((index == "forward") or (index == "dopredu")):
+        self.pwm.setLevel(self.BIN1, 0)
+        self.pwm.setLevel(self.BIN2, 1)
+      elif ((index == "backward") or (index == "dozadu")):
+        self.pwm.setLevel(self.BIN1, 1)
+        self.pwm.setLevel(self.BIN2, 0)
+      else: 
+        print("Unkwnown direction motor B")	
+    else:
+      print("The robot has only two motors")
+      
+  def motorStop(self, motor):
+    if (motor == 0):
+      self.pwm.setDutycycle(self.PWMA, 0)
+    elif (motor == 1):
+      self.pwm.setDutycycle(self.PWMB, 1)
+    else:
+      print("The roboy has only two motors")
             
-    def goForward(self, speed):
-        self.motorRun(0 , "forward", speed)
-        self.motorRun(1 , "forward", speed)  
-        
-    def goBackward(self, speed):
-        self.motorRun(0 , "backward", speed)
-        self.motorRun(1 , "backward", speed)                
-        
-    def goLeft(self, speed_left, speed_right):
-        self.motorRun(0 , "backward", speed_left)
-        self.motorRun(1 , "forward", speed_right)
-    
-    def goRight(self, speed_left, speed_right):
-        self.motorRun(0 , "forward", speed_left)
-        self.motorRun(1 , "backward", speed_right)    
-        
-    def stop(self):
-        self.motorStop(0)
-        self.motorStop(1)
-			
+  def goForward(self, speed):
+      self.motorRun(0 , "forward", speed)
+      self.motorRun(1 , "forward", speed)  
+      
+  def goBackward(self, speed):
+      self.motorRun(0 , "backward", speed)
+      self.motorRun(1 , "backward", speed)                
+      
+  def goLeft(self, speed_left, speed_right):
+      self.motorRun(0 , "backward", speed_left)
+      self.motorRun(1 , "forward", speed_right)
+  
+  def goRight(self, speed_left, speed_right):
+      self.motorRun(0 , "forward", speed_left)
+      self.motorRun(1 , "backward", speed_right)    
+      
+  def stop(self):
+      self.motorStop(0)
+      self.motorStop(1)
+      
 # ============================================================================
 # Raspi PCA9685 16-Channel PWM Servo Driver
 # ============================================================================
@@ -93,9 +93,7 @@ class PCA9685:
 
     def __init__(self, address, debug=False):
         self.bus = smbus.SMBus(1)
-        self.address = address
-        self.debug = debug
-        if (self.debug):
+        self.address = address>
           print("Reseting PCA9685")
         self.write(self.__MODE1, 0x00)
 
