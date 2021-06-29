@@ -2,7 +2,7 @@
 
 import rospy
 from motors import RobotMotors
-from geometry_msgs import Twist
+from geometry_msgs.msg import Twist
 
 class Robot:
 
@@ -14,8 +14,12 @@ class Robot:
         linear = msg.linear.x
         angular = msg.angular.z
 
-        Ml = (1 + angular) * linear * 100
-        Mr = (1 - angular) * linear * 100
+        if (linear != 0):
+            Ml = (1 - angular) * linear * 100
+            Mr = (1 + angular) * linear * 100
+        else:
+            Ml = - angular * 100
+            Mr = angular * 100
 
         Ml = max(min(Ml, 100), -100)
         Mr = max(min(Mr, 100), -100)
@@ -23,12 +27,13 @@ class Robot:
         MlDir = "forward" if Ml >= 0 else "backward"
         MrDir = "forward" if Mr >= 0 else "backward"
 
-        self.motors.motorRun(0, MlDir, Ml)
-        self.motors.motorRun(1, MrDir, Mr)
+        self.motors.motorRun(0, MlDir, abs(Ml))
+        self.motors.motorRun(1, MrDir, abs(Mr))
 
 if __name__ == "__main__":
     rospy.init_node("robot_node")
     R = Robot()
+    rospy.spin()
 
 
 
