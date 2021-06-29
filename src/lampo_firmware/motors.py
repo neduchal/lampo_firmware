@@ -93,8 +93,8 @@ class PCA9685:
 
     def __init__(self, address, debug=False):
         self.bus = smbus.SMBus(1)
-        self.address = address>
-          print("Reseting PCA9685")
+        self.address = address
+        print("Reseting PCA9685")
         self.write(self.__MODE1, 0x00)
 
     def write(self, reg, value):
