@@ -6,7 +6,7 @@ import smbus
 
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
-from node import Node
+#from node import Node
 
 from PIL import Image
 from PIL import ImageDraw
@@ -14,10 +14,10 @@ from PIL import ImageFont
 
 import subprocess
 
-class Display(Node):
+class Display:
     
     def __init__(self, i2c_address=0x3C):
-        Node.__init__(self, "display_node", "localhost", 8000)
+        #Node.__init__(self, "display_node", "localhost", 8000)
 
         self.display = disp = Adafruit_SSD1306.SSD1306_128_64(rst=None, i2c_address=i2c_address)
         self.display.begin()
@@ -38,8 +38,9 @@ class Display(Node):
     def clear(self):
         self.draw.rectangle((0,0,self.width,self.height), outline=0, fill=0)
 
-    def addString(self, str):
-        self.strings.append(str)
+    def addString(self, string):
+        self.strings.append(string)
+        print(self.strings)
         if len(self.strings) > 6:
             self.strings.pop(0)
 
@@ -49,11 +50,13 @@ class Display(Node):
 
     def drawIP(self):
         self.text(f"IP: {self.ip}", 0)
+        self.text(f"-------------------", 1)        
 
-    def draw(self):
+    def push(self):
         self.clear()
         self.drawIP()
-        self.display.image(self.image)
-        self.display.display()
-        for i, s in enumerate(self.strings.reverse()):
+        for i, s in enumerate(self.strings[::-1]):
+            print(s)
             self.text(s, 2 + i)
+        self.display.image(self.image)
+        self.display.display()            

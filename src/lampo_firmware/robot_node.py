@@ -16,6 +16,7 @@ class Robot:
 
     def display_callback(self, msg):
         self.display.addString(msg.data)
+        self.display.push()
         pass
 
     def control_callback(self, msg):
