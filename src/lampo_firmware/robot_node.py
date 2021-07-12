@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 
 import rospy
+from display import Display
 from motors import RobotMotors
 from geometry_msgs.msg import Twist
+from std_msgs.msg import String
 
 class Robot:
 
     def __init__(self):
         self.motors = RobotMotors()
+        self.display = Display()
         self.control_subscriber = rospy.Subscriber("/cmd_vel", Twist, callback=self.control_callback, queue_size=10)
+        self.display_subscriber = rospy.Subscriber("/display", String, callback=self.display_callback, queue_size=10)
+
+    def display_callback(self, msg):
+        self.display.addString(msg.data)
+        pass
 
     def control_callback(self, msg):
         linear = msg.linear.x

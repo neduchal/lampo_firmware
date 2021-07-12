@@ -26,17 +26,22 @@ class Display(Node):
         self.image = Image.new('1', (self.width, self.height))
         self.draw = ImageDraw.Draw(self.image)
         self.font = ImageFont.load_default() 
+        self.strings= []
 
         cmd = "hostname -I | cut -d\' \' -f1"
         self.ip = subprocess.check_output(cmd, shell = True ).decode('UTF-8')
-
-        print(type(self.ip))
+        #print(type(self.ip))
         # Clear display.
         self.display.clear()
         self.display.display()
 
     def clear(self):
         self.draw.rectangle((0,0,self.width,self.height), outline=0, fill=0)
+
+    def addString(self, str):
+        self.strings.append(str)
+        if len(self.strings) > 6:
+            self.strings.pop(0)
 
     def text(self, text, line):
         " LINE 0,1 - yellow, LINE 2-7 - blue"
@@ -45,16 +50,10 @@ class Display(Node):
     def drawIP(self):
         self.text(f"IP: {self.ip}", 0)
 
-    def run(self):
-        while True:
-            self.clear()
-            self.drawIP()
-            self.display.image(self.image)
-            self.display.display()
-            msg = self.getMessage("display")
-
-
-
-if __name__ == "__main__":
-    d = Display()
-    d.run()
+    def draw(self):
+        self.clear()
+        self.drawIP()
+        self.display.image(self.image)
+        self.display.display()
+        for i, s in enumerate(self.strings.reverse()):
+            self.text(s, 2 + i)
