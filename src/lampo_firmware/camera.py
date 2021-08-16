@@ -23,11 +23,13 @@ class CameraNode:
         
 
     def run(self):
-        while True:
+        for frame in self.camera.capture_continuous(self.stream, format="bgr", use_video_port=True):
             if rospy.is_shutdown():
                 break
-            self.camera.capture(self.stream, format="bgr")
-            image = self.stream.array
+            #self.camera.capture(self.stream, format="bgr")
+            #image = self.stream.array
+            image = frame.array
+            self.stream.truncate(0)
             if image is not None:
                 img_msg = self.cv_bridge.cv2_to_imgmsg(image, encoding="bgr8")
                 self.image_pub.publish(img_msg)
