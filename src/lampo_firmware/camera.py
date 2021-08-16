@@ -13,8 +13,10 @@ class CameraNode:
     def __init__(self):
         self.camera = picamera.PiCamera()
         #self.camera.start_preview()
+        self.camera.resolution = (640,480)
+        self.framerate = 30
         time.sleep(2)
-        self.stream = picamera.array.PiRGBArray(self.camera)
+        self.stream = picamera.array.PiRGBArray(self.camera, size=(640, 480))
         self.rate = rospy.Rate(10)
         self.cv_bridge = cv_bridge.CvBridge()
         self.image_pub = rospy.Publisher("/camera", Image, queue_size=10)
