@@ -12,7 +12,7 @@ class CameraNode:
 
     def __init__(self):
         self.camera = picamera.PiCamera()
-        self.camera.start_preview()
+        #self.camera.start_preview()
         time.sleep(2)
         self.stream = picamera.array.PiRGBArray(self.camera)
         self.rate = rospy.Rate(10)
@@ -24,7 +24,7 @@ class CameraNode:
         while True:
             if rospy.is_shutdown():
                 break
-            self.camera.capture(self.stream, format="brg")
+            self.camera.capture(self.stream, format="bgr")
             image = self.stream.array
             if image is not None:
                 img_msg = self.cv_bridge.cv2_to_imgmsg(image, encoding="bgr8")
