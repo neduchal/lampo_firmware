@@ -11,7 +11,7 @@ from sensor_msgs.msg import Image
 class CameraNode:
 
     def __init__(self):
-        self.camera = picamera.Picamera()
+        self.camera = picamera.PiCamera()
         self.camera.start_preview()
         time.sleep(2)
         self.stream = picamera.array.PiRGBArray(self.camera)
