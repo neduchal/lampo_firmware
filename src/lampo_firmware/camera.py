@@ -13,11 +13,14 @@ class CameraNode:
     def __init__(self):
         self.camera = picamera.PiCamera()
         #self.camera.start_preview()
+        camera_width = rospy.get_param("~camera_width", default=640)
+        camera_height = rospy.get_param("~camera_height", default=480)
+        publish_rate = rospy.get_param("~publish_rate", default=10)
         self.camera.resolution = (640,480)
         self.framerate = 30
         time.sleep(2)
-        self.stream = picamera.array.PiRGBArray(self.camera, size=(640, 480))
-        self.rate = rospy.Rate(10)
+        self.stream = picamera.array.PiRGBArray(self.camera, size=(camera_width, camera_height))
+        self.rate = rospy.Rate(publish_rate)
         self.cv_bridge = cv_bridge.CvBridge()
         self.image_pub = rospy.Publisher("/camera", Image, queue_size=10)
         
@@ -26,8 +29,6 @@ class CameraNode:
         for frame in self.camera.capture_continuous(self.stream, format="bgr", use_video_port=True):
             if rospy.is_shutdown():
                 break
-            #self.camera.capture(self.stream, format="bgr")
-            #image = self.stream.array
             image = frame.array
             self.stream.truncate(0)
             if image is not None:
