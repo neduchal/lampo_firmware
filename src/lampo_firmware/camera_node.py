@@ -37,6 +37,6 @@ class CameraNode:
             self.rate.sleep()
 
 if __name__ == "__main__":
-    rospy.init_node("lampo_camera_node")
+    rospy.init_node("camera_node")
     camera = CameraNode()
     camera.run()
