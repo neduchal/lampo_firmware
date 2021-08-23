@@ -30,17 +30,17 @@ class Display:
 
         cmd = "hostname -I | cut -d\' \' -f1"
         self.ip = subprocess.check_output(cmd, shell = True ).decode('UTF-8')
-        #print(type(self.ip))
         # Clear display.
         self.display.clear()
         self.display.display()
 
     def clear(self):
         self.draw.rectangle((0,0,self.width,self.height), outline=0, fill=0)
-
+        self.display.clear()
+        self.display.display()
+        
     def addString(self, string):
         self.strings.append(string)
-        print(self.strings)
         if len(self.strings) > 6:
             self.strings.pop(0)
 
