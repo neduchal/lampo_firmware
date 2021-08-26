@@ -1,4 +1,4 @@
-<<?xml version="1.0"?>
+<?xml version="1.0"?>
 <launch>
 
     <node name="robot_node" pkg="lampo_firmware" type="robot_node.py"  output="log" respawn="false" respawn_delay="0">
