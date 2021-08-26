@@ -43,6 +43,7 @@ if __name__ == "__main__":
     rospy.init_node("robot_node")
     R = Robot()
     rospy.spin()
+    R.display.clear()
 
 
 

@@ -6,7 +6,6 @@ import smbus
 
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
-#from node import Node
 
 from PIL import Image
 from PIL import ImageDraw
@@ -17,7 +16,6 @@ import subprocess
 class Display:
     
     def __init__(self, i2c_address=0x3C):
-        #Node.__init__(self, "display_node", "localhost", 8000)
 
         self.display = disp = Adafruit_SSD1306.SSD1306_128_64(rst=None, i2c_address=i2c_address)
         self.display.begin()
