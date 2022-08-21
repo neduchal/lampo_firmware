@@ -29,11 +29,11 @@ class Robot:
 
     def left_motor_callback(self, msg):
         motor_direction, value = self.constraint_motor_value(msg.data)
-        self.motorRun(0, motor_direction, value)
+        self.motors.motorRun(0, motor_direction, value)
 
     def right_motor_callback(self, msg):
         motor_direction, value = self.constraint_motor_value(msg.data)
-        self.motorRun(1, motor_direction, value)
+        self.motors.motorRun(1, motor_direction, value)
 
     def compute_motor_values(self, linear, angular):
         Ml = 0
